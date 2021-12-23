@@ -1,0 +1,784 @@
+\documentclass[dvipsnames]{article}
+\usepackage[margin=0.8in,letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{authblk}
+\usepackage[T1]{fontenc}
+\usepackage{gentium}
+\usepackage{newtxmath}
+\usepackage{natbib}
+\usepackage[final]{hyperref}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{siunitx}
+\usepackage{titlesec}
+\usepackage{multicol,setspace,booktabs}
+\usepackage[nameinlink]{cleveref}
+\usepackage{threeparttable}
+\usepackage{adjustbox}
+%\usepackage{subfigure}
+%\usepackage{junpan}
+\usepackage[font=small]{caption}
+\usepackage{multirow}
+\usepackage{hang}
+\usepackage{tikz}
+\usepackage{subcaption}
+% \usepackage{libertine}
+
+\usetikzlibrary{bayesnet}
+
+\setcounter{secnumdepth}{4}
+
+% A schematic for data processing might be helpful
+\usetikzlibrary{shapes,arrows}
+\tikzset{font=\footnotesize}
+\newcommand{\js}[1]{{\color{MidnightBlue}{{[JS: \bf #1]}}}}
+\newcommand{\dl}[1]{{\color{Plum}{{[DL: \bf #1]}}}}
+\newcommand{\cl}[1]{{\color{WildStrawberry}{{[CL: \bf #1]}}}}
+\newcommand{\yz}[1]{{\color{ForestGreen}{{[YZ: \bf #1]}}}}
+
+\newcommand{\ExternalLink}{%
+    \tikz[x=1.2ex, y=1.2ex, baseline=-0.05ex]{% 
+        \begin{scope}[x=1ex, y=1ex]
+            \clip (-0.1,-0.1) 
+                --++ (-0, 1.2) 
+                --++ (0.6, 0) 
+                --++ (0, -0.6) 
+                --++ (0.6, 0) 
+                --++ (0, -1);
+            \path[draw, 
+                line width = 0.5, 
+                rounded corners=0.5] 
+                (0,0) rectangle (1,1);
+        \end{scope}
+        \path[draw, line width = 0.5] (0.5, 0.5) 
+            -- (1, 1);
+        \path[draw, line width = 0.5] (0.6, 1) 
+            -- (1, 1) -- (1, 0.6);
+            }
+    }
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Datathon Championship 2021}
+\lhead{D. Li, C. Liu, J. Song and Y. Zhang}
+\cfoot{\thepage}
+
+\hypersetup{
+	colorlinks=true,       % false: boxed links; true: colored links
+	linkcolor=Orchid,        % color of internal links
+	citecolor=Orchid,        % color of links to bibliography
+	filecolor=Orchid,     % color of file links
+	urlcolor=Orchid         
+}
+
+\onehalfspacing
+
+\renewcommand\Affilfont{\itshape\small}
+
+\title{%
+\includegraphics[width=0.5\textwidth]{data-open-logo.jpg}~
+\\[1cm]
+Datathon Championship 2021 \\
+\vspace{0.5em}
+\textbf{Your Trash is My Treasure:} \\
+\textbf{Trade Flow Optimization Model for Plastic Pollution Reduction} \\[0.5em]
+\large Team 10} 
+\author[1]{Daming Li}
+\author[2]{Canyao Liu}
+\author[3]{Jiaming Song}
+\author[4]{Yiliang Zhang}
+\affil[1]{Department of Physics, Yale University}
+\affil[2]{Yale School of Management}
+\affil[3]{Department of Computer Science, Stanford University}
+\affil[4]{Department of Biostatistics, Yale School of Public Health}
+
+\date{November 21, 2021}
+
+\graphicspath{{figures/}}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\section{Topic question}
+
+Plastics is one of the defining materials in modern human society, with its presence in almost all sorts of products in everyday life. However, mismanagement of plastic waste can cause serious ocean plastic pollution. Dealing with plastic waste mismanagement turns out to be challenging. Partly because
+%On the other hand, 
+the value chain of the plastics industry is very complex, with many countries in the trade network playing distinct roles at different stages of the life-cycle of plastics - from raw inputs to plastic products to plastic waste. Therefore, it is important to think about the problem from life-cycle perspective
+for understanding how plastic trade in the global economy impacts plastic pollution. In this study, we ask the following research questions:
+
+%
+\begin{itemize}
+    \item What are the distribution patterns of plastic products and plastic waste across the globe?
+    \item How to optimize global trade flows across the life-cycle of plastics in order to reduce ocean plastic pollution?
+    \item What policy recommendations can we offer given the optimal trade flows we solve?
+\end{itemize}
+%
+Answers to this question will provide crucial insights to many important issues such as: 1) How to assess a trade is environmental friendly? 2) How to evaluate a single country's trade policy change from a global perspective? 3) How to tackle plastic pollution through international cooperation and recycling?
+
+
+
+\pagebreak
+
+\setcounter{page}{1}
+\section{Executive summary}
+
+%\dl{I don't think we should repeat the introductory statements here but jump directly into the problem we want to solve}Plastic has been one of the defining materials of the modern world since its invention. Its wide variety of applications and low production costs have made it omnipresent in almost all sorts of daily products. Despite its extensive usage, the sheer amount of mismanaged waste coming from plastic products has created serious environmental challenges. It is estimated that 8,300 million metric tons of plastic had been produced in the world until 2015, and 70\% of them ended up as non-recycled plastic waste. 
+
+%With sustainability and environmental issues at the center of policy discussions in recent years, dealing with plastic waste properly has become increasingly important. This report aims to provide insights in tackling the challenge. 
+Managing plastic waste from an international perspective is complex, with many countries in the trade network playing distinct roles at different stages of the life-cycle of plastics. %Some countries even play dual roles in the plastics sector. Several of the world’s largest exporters of plastics products and inputs are at the same time among the world’s largest importers, indicating that plastics trade is multi-faceted and multi-directional. 
+Trade flows are therefore the key to understanding global plastic market and its supply chains. %However, the existing scholarly and policy literature has been oriented toward the downstream side of plastic pollution, without putting much emphasis on thinking about the problem from the entire life cycle including upstream and recycling. In this paper, we bridge the gap by building up a network flow model to analyze trade relations across the global plastics industry and the life cycle of plastics. 
+In this paper, we formulate an optimization problem from the perspective of reducing global (ocean) plastics pollution, and create a novel framework based on a network flow model to identify the optimal international trade flows over the life-cycle of plastics.
+
+To that end, we first study the distributional patterns of raw inputs for plastic production, plastic products themselves, and plastic waste, as well as their relationships with a country's other characteristics like GDP or income level (Sec.~\ref{sec:eda}). We establish four facts at the country level: 1) Net exports of plastic products is positively correlated with oil production (key input); 2) High-income countries tend to be net importers of plastic products whereas low-income countries tend to be net exporters; 3) High-income countries tend to be net exporters of plastic waste whereas low-income countries tend to be net importers; 4) Plastic recycle rate is positively correlated with a country's GDP per capita and mismanaged plastic waste rate is negatively correlated with GDP per capita. Those empirical findings motivate our assumptions over the model. %and help us constrain the model.
+
+Next, we construct a network flow model featuring the life cycle of plastic in both domestic and international economic activities (Sec.~\ref{sec:modeling}). Our model quantifies %presents the first attempt to quantify and map 
+global flows of production, consumption, and trade across the life-cycle of plastics -- from raw inputs and subsequent plastic products to its final stage as waste. Crucially, we include \textit{international trade of plastic waste for recycling}, where countries can import plastic waste for the \textit{sole purpose} of it being used in production and consumption. Our model describes five stages of plastic flow: \textbf{I}) from fossil fuel to raw plastic materials, \textbf{II}) from materials to products, \textbf{III}) from products to plastic waste via consumption, \textbf{IV}) from plastic waste to mis-managed plastic waste, and \textbf{V}) from plastic waste to recycled raw plastic materials. We include the effects of international trade at stages \textbf{I}, \textbf{II}, and \textbf{V}, and quantify pollution to the environment using cost functions at stage \textbf{IV}.
+
+Given the natural and imposed constraints over the model, we wish to search among the plastic network flows that encompasses assignments of plastic production, consumption, trade, and recycling for countries across the globe.
+Within polynomial time, we can find an optimal plastic flow with minimum cost, \textit{i.e.}, a global assignment that minimizes the global (or ocean) environmental impact while ensuring the needs of consumption in every country. Our assignment is guaranteed to reduce global (or ocean) pollution over cases where trading recyclable plastic waste does not occur.
+
+We compare the trade flows in reality and the optimal trade flows determined by our model and find that the two are highly correlated (Sec.~\ref{ssec:asso}), indicating that our model is fairly close to reality. Next, we further compare our model solutions under different parameter settings and offer two policy insights. 
+
+First, increasing trade capacity of plastic waste reduces pollution (Sec.~\ref{sec:waste-policy}). Specifically, if we increase the current trade capacity between countries with plastic waste trade by $10 \times$, we can reduce the global mis-managed plastic waste by $1.4\%$ and the ocean plastic pollution by $13.8\%$. There are also differential effects of lifting plastic waste trade capacity for different countries, with higher improvements for countries with lower GDP per capita. For Philippines, we find that the above policy reduces its ocean plastic pollution by $90.8\%$, and reduced its share of ocean plastic waste from $14.4\%$ to $1.5\%$.
+
+Second, increasing plastic waste recycle rate reduces pollution (Sec.~\ref{sec:recycle-policy}). This is not a surprising finding \textit{per se}, but we also observe a clear heterogeneity in its effects across countries and regions. Improvement in plastic recycling capabilities in developing countries tend to help more with this global issue, while that in developed countries is relatively marginal. In addition, larger developing countries like China has larger policy lever and its improvement in recycling can significantly alleviate the global pollution. Therefore, it is important that developed countries provide more technology assistance to developing countries in improving their recycling system.
+
+In summary, we develop a novel model for optimizing and evaluating international trade flows over the life-cycle of plastics. Our flexible framework, combined with real-world data, can provide lots of actionable insights for governments' trade policies across the globe.
+
+\pagebreak
+
+
+\section{Technical exposition}
+
+We first describe the data we use and our data processing approach. Second, we present our descriptive analysis on the relationships among plastic products, plastic waste, and country characteristics. Third, we construct a network model to reflect the trade flows for raw inputs, plastic products, plastic waste, and plastic recycling. We further solve the optimal allocation of trade flows for different stages for different sets of parameters. Lastly, we use our model solutions to inform policy makers on which implementable policy instruments can be helpful in reducing plastic pollution.
+
+\subsection{Data sources and processing}
+\label{sec:data}
+Besides the data provided, we also utilize online data sources to support our analysis. They are:
+\begin{itemize}
+    \item Country code: We download the alpha-3 code and numeric code for each country\footnote{Link for data download: \href{https://www.iban.com/country-codes}{[IBAN:country codes alpha-2 and alpha-3]}} in order to aggregate the information from different data source. 
+    \item Oil production by country: We download the oil production data for different countries in 2010 from the ``Our World in Data'' website\footnote{Link for data download: \href{https://ourworldindata.org/fossil-fuels}{[Our World in Data: Oil production]}}. We use this to reflect each country's capacity for producing raw materials for plastic production. This is used to estimate capacities in \textbf{Stage I} of our model.
+    \item Industrial GDP by country: We download the GDP of the industrial sector by country from Statistics Times website\footnote{Link for data download: \href{https://statisticstimes.com/economy/countries-by-gdp-sector-composition.php}{[Statistics Times: Industrial GDP]}}. We use this to reflect the production of plastic products in each country. This is used to estimate capacities in \textbf{Stage II} of our model.
+    \item Aggregate consumption by country: We download the aggregate consumption data from the World Bank database\footnote{Link for data download: \href{https://data.worldbank.org/indicator/NE.CON.TOTL.ZS}{[World Bank: Aggregate consumption]}}. We use this to reflect the demands of plastic products in each country.  This is used to estimate capacities in \textbf{Stage III} of our model.
+    \item Municipal solid waste recycle rate by country: We download data for a selected list of countries from Statista website\footnote{Link for data download: \href{https://www.statista.com/statistics/1052439/rate-of-msw-recycling-worldwide-by-key-country/}{[Statista: Municipal solid waste recycle rates]}}. We use this as a proxy for plastic waste recycle rate.  This is used to estimate capacities in \textbf{Stage V} of our model.
+    
+\end{itemize}
+
+\noindent After gathering and downloading the data, we carry out preprocessing for the following data:
+\begin{itemize}
+    \item Plastic trade data: We use the same year of the world trade data and the data to aggregate. For example, in our trade flows optimization model, we use the 2010 world trade data because the mismanaged rate data is measured in 2010. We use the average trade volume of the import of country A from country B and the export of country B to country A as the final trade volume of the specific form of the plastic from country B to country A. The final trade volume between country A and country B is further used as the parameter for trade capacity in the trade flows optimization model.
+    \item Mismanaged plastic waste data: We use the average mismanaged plastic waste rate of the countries with available data to impute the mismanaged plastic waste rate of the countries without the information. Mismanaged plastic waste rate is defined as the proportion of total plastic waste generation.
+    \item Plastic waste recycle rate: Because we only have recycle rates for key countries in the data downloaded (32 countries in total), we impute the recycle rates by first fitting a regression of recycle rate on GDP per capita for the countries we have data for and then getting the predicted values for all countries.
+\end{itemize}
+
+
+
+
+\subsection{Exploratory data analysis}
+\label{sec:eda}
+
+The correlations among the proportion of different kinds of waste are shown in the left graph of Figure \ref{fig:waste_component}. Asterisks suggest statistical significance after multi-hypothesis correction. 
+%Waste that is organic and comes from food sources is negatively correlated with all the other kinds of waste. 
+Specifically, plastic waste shows nominally significant positive correlation with paper or cardboard waste (p-value $=$ 0.02). In the right graph of Figure \ref{fig:waste_component}, we divide countries into four income levels: low income (LIC), lower-middle income (LMC), upper-middle income (UMC), and high income (HIC) and show the association between income level and the proportions of different kinds of waste. In particular, the proportion of plastic waste in low-income countries is significant less than those of other countries (t test p-value $=$ 0.002), relating the structure of waste generation to country income. We didn't observe significant association between the plastic waste as the proportion of total waste and import/export status of the countries, as shown in Appendix-Figure \ref{fig:a1}.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}{0.38\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/components.pdf}	
+		%\caption{}
+		\label{subfig:heatmap_component}
+	\end{subfigure}
+	\begin{subfigure}{0.52\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/boxplot_component.pdf}
+		%\caption{}
+		\label{subfig:boxplot_component}
+	\end{subfigure}
+	\caption{\small Correlation of proportions of different kinds of waste and their relation with country income.}
+	\label{fig:waste_component}
+\end{figure}
+
+Next, we show that the income level of countries is also associated with \textit{mismanaged} plastic waste per capita. In the left graph of Figure \ref{fig:mismanged}, we observed that the lower-middle income countries and upper-middle income countries generate more mismanaged plastic waster per capita (kilograms per person per day) than low income countries and high income countries due to their more rapid development in industrial sector. In the right graph of Figure \ref{fig:mismanged}, we compare mismanaged plastic per capita with log-scaled GDP per capita. Similarly, we see an inverse-U curve pattern. Thus, helping the LMCs and UMCs to develop effective waste management systems including the ability to recycle waste and the import/export polices making is crucial to reduce plastic pollution.
+
+\begin{figure}[htb!]
+	\centering
+	\begin{subfigure}{0.46\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/boxplot_mis_per_person.pdf}	
+		%\caption{}
+		\label{subfig:boxplot_mis}
+	\end{subfigure}
+	\begin{subfigure}{0.46\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/scatter_mis_per_person.pdf}
+		%\caption{}
+		\label{subfig:scatter_mis}
+	\end{subfigure}
+	\caption{\small Correlation of proportions of different kinds of waste and their relation with country income.}
+	\label{fig:mismanged}
+\end{figure}
+
+Figure \ref{fig:plastic_vs_gdp} shows the relationship between a country's plastic goods' trade (as a fraction of its total trade) and its GDP (or income level). Specifically, in the upper left graph, we see a significant positive correlation (p-value $<$ 0.001) between a country's plastic goods' fraction in its export and its GDP per capita; in the upper right graph, however, we see a significant negative correlation (p-value $<$ 0.001) between a country's plastic goods' fraction in its import and its GDP per capita. Those indicate that a high-income country tends to export the plastic products whereas a low-income country tends to import plastic products. This pattern holds stable across time, as shown in Appendix-Figure \ref{fig:timeseries}. In terms of international trade on different forms of plastic, we define the export propensity of a specific form of plastic for each country as its export volume in US dollar over the sum of its import and export volume. As is shown the lower left graph of Figure \ref{fig:plastic_vs_gdp}, which computes the correlation of the export propensity among the five forms of plastics, the export propensity of plastic waste is negatively correlated with the export propensity of all other forms of plastic. The asterisks represent statistical significance after Bonferroni correlation. The negative correlation of export propensity of plastic waste reflects different import/export policies for different forms of plastic across the countries. For instance, the lower middle and left graphs of Figure \ref{fig:plastic_vs_gdp} demonstrate that high-income countries export more plastic waste (t test p-value=0.055) and import more final manufactured plastic goods (t test p-value <0.001) than countries with less income. To be specific, only 7 out of the 21 LICs are exporters of plastic waste while 43 out of 58 HICs are exporter of plastic waste. The net exports are the total exports per capita subtracted by the total imports per capita of the corresponding forms of plastic measured by US dollars at current price. This indicates that the HICs, which have more developed waste management system, tend to export their recyclable plastic waste to the countries with less income. We note that no matter what the form of plastic is, the import/export volumes per capita of HIC are consistently higher.
+
+\begin{figure}[htb!]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/export.png}	
+		%\caption{}
+		\label{subfig:export}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/import.png}
+		%\caption{}
+		\label{subfig:import}
+	\end{subfigure}
+	%\begin{subfigure}{0.645\textwidth}
+	%	\centering 
+	%	\includegraphics[width=\textwidth]{figures/time_series.png}
+	%\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/heatmap_trade.pdf}
+		%\caption{}
+		\label{subfig:heatmap_products}
+	\end{subfigure}
+	\begin{subfigure}{0.345\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/boxplot_plastic_waste.pdf}	
+		%\caption{}
+		\label{subfig:plastic_waste}
+	\end{subfigure}
+	\begin{subfigure}{0.345\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/boxplot_final.pdf}
+		%\caption{}
+		\label{subfig:final}
+	\end{subfigure}
+	\caption{\small Plastic goods trade and countries' GDP (or income level).}
+	\label{fig:plastic_vs_gdp}
+\end{figure}
+
+Figure \ref{fig:oil} plots the relationship between a country's oil production amount and its net plastic good export in 2010, using the countries that at least produced 100 TWh oil in that year. Given that oil is the most important input to produce plastic goods, not surprisingly, there is a strong positive correlation between the two (p-value $=$ 0.003). This provides support to our model assumption that the capacity to produce raw form of plastic is correlated to oil production amount (\textbf{Stage I}).
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.6\textwidth]{figures/oil.png}
+	\caption{\small Plastic product net export and oil production.}
+	\label{fig:oil}
+\end{figure}
+
+The left graph of Figure \ref{fig:income_rec_mis} presents the relationship between a country's recycle rate of municipal solid waste and its GDP per capita level. Note that municipal solid waste is not the same as plastic waste, but the recycle rates of the two is perceived to be highly correlated \cite{epa2018}. Since we do not find data on plastic waste recycle rates, we use municipal solid waste recycle rates as proxies for that, as mentioned in Section \ref{sec:data}. The figure shows that the recycle rates are strongly positively correlated with GDP per capita, indicating that richer countries tend to recycle more. This observation motivates our assumption in the model in terms of recycling capacity (\textbf{Stage V}, recycling via international trade).
+In addition, the right graph of Figure \ref{fig:income_rec_mis} shows that the mismanaged rate of plastic waste monotonously decreases with the income of the countries. The mismanaged plastic waste rate reflect the ability of waste management of the country. Better ability of waste management results in less mismanaged plastic waste . This is reasonable given that richer countries tend to have better waste management technology and higher regulatory standards. This observation is used in our model to specify the cost efficiency functions for each country (\text{Stage IV}, waste generation).
+
+\begin{figure}[htb!] 
+	\centering
+			\begin{subfigure}{0.545\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/recycle_rate.png}
+	%\caption{\small }
+	\label{fig:recycle}
+	\end{subfigure}
+		\begin{subfigure}{0.445\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/boxplot_mis_income.pdf}
+		%\caption{}
+		\label{subfig:scatter_mis}
+	\end{subfigure}
+		\caption{\small Recycle rate, waste mismanagement, and GDP per capita.}
+	\label{fig:income_rec_mis}
+\end{figure}
+
+Put together, both the trade patterns and mismanaged waste generation of the countries are associated with country incomes. Developed countries, which show low mismanaged plastic waste rate, tend to export more plastic waste to the world. Meanwhile, we found significant positive association between oil production and raw plastic production, between GDP per capita and recycle rate, and between plastic waste export per capita and waste management ability which agree with all of our model assumptions.
+
+\subsection{Modeling}
+\label{sec:modeling}
+\input{models}
+% Explain the model here, just the method
+
+% \begin{tikzpicture}[x=1.7cm,y=1.8cm]
+
+%   % Nodes
+
+%   \node[obs]                   (S)      {$S$} ; %
+%   \node[obs, right=of S]    (S1)      {$S_1$} ; %
+%   \node[obs, below=of S1]    (S2)  {$S_2$}; %
+%   \node[obs, right=of S2] (T) {$T$};
+%   \edge{S}{S1}
+%   \edge{S}{S2}
+%   \edge{S1}{S2}
+%   \edge{S2}{S1}
+%   \edge{S1}{T}
+%   \edge{S2}{T}
+
+% \end{tikzpicture}
+
+% For the moment, assume we only have one product type. Later we can generalize to multiple types.
+
+% \begin{itemize}
+% \item Countries $i \in [1, N]$,
+% \item Import $I_{i,j}$ (net import from country $i$ to country $j$),
+% \item Source $S_{i}$ (manufacturing capacity)
+% \item Consumption nodes $T_{i}$ (transform to waste)
+% \item Sink $T$, links $T_{i} \to T$, with maximum capacity of consumption
+% \item Cost (related to unit price) between countries $c(i, j)$, $c(i, i) = 0$
+% \item Rate of conversion to waste $r=1$ (if this is homogeneous across countries then it does not affect optimization)
+% \end{itemize}
+
+% Mis-managed Plastic Waste is country cosumption times something (assume known). $W_i$ is the mismanaged waste produced by country $i$.
+
+
+% Minimize:
+
+% \begin{equation}
+%  \sum_{i,j} c_{i,j} I_{i,j} + \lambda\sum_{i=1}^{N} W_i 
+% \end{equation}
+
+% where $W_i = T_i w_i$, $T_i = (\sum_j I_{i,j} + S_{i} - \sum_j I_{j,i})r$
+
+% Subject to:
+% \begin{itemize}
+% \item $0 \leq \sum_j I(i,j) \leq q_{i}$ (can use historical max)
+% \item $T_i = \frac{\textup{GDP}_i}{\sum_i \textup{GDP}_i}Z$ ($Z$ given in the data)
+% \item $\sum_i S_i = Z$
+% \end{itemize}
+
+
+% The solution to the linear program, which is the optimal trade pattern, is defined by a configuration of $\left \{ I_{i,j},S_i \right \}$
+
+
+
+% \subsection{New model}
+% \begin{tikzpicture}[x=1.7cm,y=1.8cm]
+
+%   % Nodes
+
+%   \node[obs]                   (S)      {$S$} ; %
+%   \node[obs, right=of S]    (S1)      {$S_1$} ; %
+%   \node[obs, below=of S1]    (S2)  {$S_2$}; %
+%   \node[obs, right=of S1] (T1) {$T_1$};
+%   \node[obs, right=of S2] (T2) {$T_2$};
+%   \node[obs, right=of T2] (T) {$T$};
+%   \edge{S}{S1}
+%   \edge{S}{S2}
+%   \edge{S1}{S2}
+%   \edge{S2}{S1}
+%   \edge{S1}{T1}
+%   \edge{S2}{T2}
+%   \edge{T1}{T2}
+%   \edge{T2}{T1}
+%   \edge{T1}{T}
+%   \edge{T2}{T}
+% \end{tikzpicture}
+
+% \begin{itemize}
+%     \item Cost between imports of ``waste'' $d(i, j)$, denoted between $T_i$ and $T_j$
+%     \item Capacity of link from $S_i \to T_i$ is given by $\frac{\textup{GDP}_i}{\sum_i \textup{GDP}_i}Z$
+%     \item Import between wastes ($T_i \to T_j$, which is $J_{ij}$ does not exceed capacity
+%     \item $T_i \to T$ is actual waste, cost is $T_i w_i$
+%     \item Constraint 1: $S \to S_i$ capacity does not exceed production level, cost 0.
+%     \item Constraint 2: Flow in $S_i$ is equal to flow out $S_i$
+%     \item Constraint 3: Flow in $T_i$ is equal to flow out $T_i$
+%     \item Minimize: find optimal flow that maximize flow capacity and minimizes cost
+% \end{itemize}
+
+% \js{
+% \begin{itemize}
+%     \item Production at stage 1 for each country, upper limit, cost = 0 (data: oil production, total plastic)
+%     $$
+%     (S \to S_i) \leq \frac{oil prod of i}{\sum oil prod} \times (all plastic)
+%     $$
+%     \item Trade at stage 1, upper limit, cost = 0 between each country (upper limit: 2010 data $\prod$ 1.1)
+%     \item Production from stage 1 to stage 2 for each country, upper bound, cost = 0 (data: industrial section GDP, by country)
+%     \item Trade at stage 2, upper limit, cost between each country (data: YZ)
+%     \item Consumption at stage 2 to stage 3, upper limit, cost = 0, bottleneck (data: consumption by country)
+%     % \item Trade at stage 3, upper limit, cost between each country (data: YZ)
+%     \item From 3 to 1 (recycle), upper limit, cost = -w (data: recycle rate)
+%     \item From 3 to T (waste, mis-managed waste rate) (data: based on existing data?)
+% \end{itemize}
+
+% Target, minimize cost
+% \begin{align}
+%     \min I(i, j) 
+% \end{align}
+% }
+
+
+
+
+
+
+
+
+\subsection{Optimal trade pattern}
+\label{ssec:asso}
+
+With our network model being able to solve for an optimal trade flow, we are able to construct a trade "fairness" score to evaluate how close the empirical trade pattern in real world is to the optimal pattern produced by the model. As explained earlier, in this study we mostly limit to the characterization of the trade of waste (while it could be easily generalized to other edges), and here for each country we compare the optimal to the empirical total imports from world, as well as that with total exports to world respectively.  
+
+\begin{figure}[htb!]
+	\centering
+	\begin{subfigure}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{EvaluationScore_import.png}	
+	\end{subfigure}
+	\begin{subfigure}{0.48\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{EvaluationScore_export.png}
+	\end{subfigure}
+	\caption{\small Comparison between the plastic waste trade pattern in reality and in optimal allocation (Left: imports from world; Right: exports to world)}
+	\label{fig:optimal}
+\end{figure}
+
+From Figure \ref{fig:optimal}, it can be seen that the real world empirical patterns positively correlate with the model-created optimal trade patterns (imports from world and exports to world for each country). The distances to the optimal trade pattern for most of the countries are actually small (Figure \ref{fig:corr_dist}). Assuming the model-created pattern is optimal as a "ground truth", the stronger the correlation is, the empirical trade flows are better. This allows us to define a metric to evaluate a given trade flow:
+
+\begin{equation}
+    \textup{Trade Fairness Score} = \textup{Corr(empirical trade flow, optimal trade flow) across countries}
+\end{equation}
+
+where the flow is represented as a concatenated imports from world and exports to world vector. This metric helps people understand the fairness of trades in the context of a global economy rather than a ``not in my backyard'' thinking. For instance, a drastic trade policy change imposed by a single country may shift the trade patterns in other countries, and may hurt the global environment even if it is seemingly beneficial to its own economy.
+
+
+\subsection{Policy Recommendations}
+
+In this section, we study the effects on ocean plastic pollution from varying two factors: 1) improving waste trade capacity, and 2) improving recycling rate. For each investigated factor, we control the other factor; this allow us to quantify the effect of modifying the factor that we care about. For each of the scenarios, we solve our network flow problem, and then use the solution to estimate the environmental impact of ocean plastic pollution from 316 rivers and from 176 countries. We estimate these quantities based on existing studies~\cite{schmidt2017export,peng2021plastic,meijer2021more} (see Appendix \ref{app:rivers} for more details).
+
+
+% We first construct a baseline model with lower recycling and trade capacity (recycling factor =0.0, capacity =1 \dl{need JS to reformulate this in plain words}), then we increase the recycling factor and capacity factor respectively, and compute the reduction in ocean pollution across regions around the world.
+
+\subsubsection{Increase trade limit for plastic waste}
+\label{sec:waste-policy}
+The first factor we investigate is the trade limit, where we fix the recycling capacities to be equal to estimates from historical data.
+We study three simple scenarios: \textbf{no trade} where trade capacity is equal to historical data and recycling capacities are zero (countries do not recycle others' plastic waste); \textbf{trade} where trade capacity and recycling capacities are equal to historical data; \textbf{more trade} where trade capacity is further multiplied by 10. 
+
+Our solution to \textbf{trade} and \textbf{more trade} reduced global ocean plastic pollution by $2.5\%$ (31,226 tons) and $14.0\%$ (181,681 tons) over \textbf{no trade} respectively.
+We demonstrate the improvements of \textbf{trade} and \textbf{more trade} policies over the \textbf{no trade} policy in Figures~\ref{fig:improvement_w1} and~\ref{fig:improvement_w10}. 
+First, we observe that none of the countries suffered from more contributions to global plastic pollution. Next, we observe that the amount of reduction in plastic pollution is not uniform over all countries. For example, Philippines is a country that has a high rate of producing plastic pollution to the ocean. Compared to \textbf{no trade}, \textbf{trade} decreases its ocean plastic pollution by $9.4\%$ whereas \textbf{more trade} decrease its ocean plastic pollution by $91.7\%$; these results suggest that Philippines exports its plastic waste to other countries that recycle them and use them in production. In Figure~\ref{fig:trade-graph}, we illustrate the pattern of plastic waste exports for China and Philippines. Naturally, we observe that more export occurs with \textbf{more trade}. We show a similar figure for India and Mexico in Figure~\ref{fig:trade-graph-ind-mex} in the Appendix. All in all, these results suggest that we should increase the trade capacity for plastic waste trade if there is enough capacity to recycle these plastics for production.
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/improvement_w1_ton.pdf}
+	\caption{\small Improvements (in tons) ocean and river pollution of \textbf{trade} over \textbf{no trade}.}
+	\label{fig:improvement_w1}
+\end{figure}
+
+
+\subsubsection{Increase recycle rate of plastic waste}
+\label{sec:recycle-policy}
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/improvement_w10_ton.pdf}
+	\caption{\small Improvements (in tons) ocean and river pollution of \textbf{more trade} over \textbf{no trade}.}
+	\label{fig:improvement_w10}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/china_trade_export_w1.pdf}
+    \caption{\textbf{trade}, China.}
+\end{subfigure}
+~
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/china_trade_export_w10.pdf}
+    \caption{\textbf{more trade}, China.}
+\end{subfigure}
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/phl_trade_export_w1.pdf}
+    \caption{\textbf{trade}, Philippines.}
+\end{subfigure}
+~
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/phl_trade_export_w10.pdf}
+    \caption{\textbf{more trade}, Philippines.}
+\end{subfigure}
+\caption{Export of China and Philippines' plastic waste under different policies on global plastic waste trade.}
+\label{fig:trade-graph}
+\end{figure}
+
+
+
+\begin{figure}[htb!]
+	\centering
+	\begin{subfigure}{0.48\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{Improvement_GDP_waste_capacity.png}
+	\end{subfigure}
+	\begin{subfigure}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Improvement_GDP_recycling.png}	
+	\end{subfigure}
+	\caption{\small Effectiveness of policies in pollution reduction and countries' GDP per capita (Left: increase of trade limit; Right: increase of recycle rate)}
+	\label{fig:rec_gdp}
+\end{figure}
+
+
+We then test the effect of recycle rate on reducing pollution. We uniformly increased the recycle rate by 10\% relative to a baseline model. It is not surprising that better plastic recycling system should help with the pollution problem. Interestingly though, we observe a clear negative correlation between the ocean pollution reduction and GDP per capita across countries (Figure \ref{fig:rec_gdp}), and similar pattern also exists with the previous trade limit strategy. This suggests that there is more space for improvement in developing countries, where recycling management system is still largely under-developed. Figure \ref{fig:improvement-recycle-50} and Figure \ref{fig:improvement-recycle-100} display the anticipated pollution reduction from increasing recycle rate on a geographical map. This heterogeneity also suggests that some countries have larger policy levers. For instance, because China is the largest developing country, improvement in recycling rate in China alone can significantly reduce global ocean plastics pollution, compared to developed countries and small developing countries (Figure \ref{fig:countrywise recycling policy}). International cooperation between developed and developing countries is therefore crucial to help raise the recycling efficiency, which would significantly alleviate the plastics pollution issue.
+
+
+
+\section{Discussion and outlook}
+
+
+We have introduced a network flow model that encompasses the life cycle of plastics in terms of production, consumption, disposal, recycling and international trade. Given realistic constraints, we can solve for the optimal trade flows that minimize global plastic pollution. The optimal trade pattern given by our model is highly correlated to the empirical trade flows in plastic waste. We also show that increasing international trade of plastic waste and domestic plastic recycling rate are effective in terms of reducing plastic pollution. As plastic waste trade is only a minor component in international trade, such a policy is actionable with a globally coordinated effort.
+
+However, our model is not without its limitations. First, we assume that the cost function is shared across the globe and do not optimize for reducing plastic waste in a particular region; this causes some countries to have a larger reduction of plastic waste than others. Second, our study currently only focuses on the trade of plastic waste, but it can be easily generalized to limits other other kinds of trade. Third, the cost function used in our study currently does not explicitly consider economic costs such as shipping and tariff. Last but not least, our model does not consider the temporal effect of international trade on plastics recycling -- even though we have the capacity to trade and recycle plastic does not mean it will be allocated to the right country in time, and we may need additional plastic production to take care of the overhead. Nevertheless, our model provides a first attempt at addressing plastic pollution via international trade, our suggested policies can be implemented in reality, and the proposed trade patterns may benefit both the environment and human consumption. 
+
+% Need to mention: our study currently only focuses on trade of waste, but can be easily generalized to other kinds of 
+% trade. More realistic model can be built by incorporating more parameters constrained by real world data. Also mention our model does not consider recycling within itself?
+
+
+\pagebreak
+% \section*{References}
+\bibliography{References}
+\bibliographystyle{plain}
+\iffalse
+\begin{hangingpar}
+Chetty, Raj, John N. Friedman, Nathaniel Hendren, Michael Stepner, and The Opportunity Insights Team (2020). \textit{The economic impacts of COVID-19: Evidence from a new public database built using private sector data.} National Bureau of Economic Research, Working Paper No. 27431.
+\end{hangingpar}
+\fi
+
+
+\appendix
+\part*{\Large Supplementary Materials}
+
+
+
+\section{Experimental details in the model}
+\subsection{Binary search method for finding optimal flow solution}
+\label{app:binsearch}
+First, we leverage the following observation:
+$$
+\mathrm{Total\ Consumption} = \mathrm{Total\ Flow} + \mathrm{Total\ Recycling},
+$$
+which can be verified on the \textbf{Type II} example (1 unit of flow plus 1 unit of recycling provides 2 units of consumption). On the one hand, increasing recycling reduces the total amount of plastics in the flow as well as plastic pollution. On the other hand, minimizing total flow makes it more difficult to satisfy the total consumption. We can design a binary search algorithm to find the optimal flow and optimal recycling value, as follows:
+\begin{enumerate}
+    \item Define upper and lower limits to the total flow $F_u = \mathrm{Total\ Consumption}$, $F_l = 0$.
+    \item While $F_u > F_l$, define mid-point total flow $F_m = \mathrm{floor}(\frac{F_u + F_l}{2})$.
+    \item Find a maximum flow of $G$ with minimum cost, subject to the total flow value does not exceed $F_m$; this can be done by adding an additional edge to the source or sink, setting its capacity to be $F_m$, and then using an out-of-the-box solver in polynomial time\footnote{See an implementation  \href{https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.flow.max_flow_min_cost.html}{here}.}.
+    \item If the flow satisfies \textbf{Constraint III}, assign $F_u \xleftarrow{} F_m$; otherwise, assign $F_l \xleftarrow{} F_m+1$.
+    \item Return $F_u$ and maximum flow $f$ for capacity $F_u$ when $F_u \leq F_l$.
+\end{enumerate}
+
+\subsection{From mis-managed plastic waste to ocean and river pollution}
+\label{app:rivers}
+Our model computes the total cost of the network flow, which can reflect the total mis-managed plastic waste (MMPW) created or the MMPW that end up polluting the ocean. The latter is often much smaller than the former because MMPW have a relatively low probability of ending up in oceans\footnote{Link for data download: \href{https://ourworldindata.org/grapher/probability-mismanaged-plastic-ocean?country=MYS~PHL~CHN~IND~LKA~BRA~NGA~TZA}{[Our World in Data: Probability of mismanaged plastic waste being emitted to ocean, 2019]}}. We also note that the probability of MMPW polluting the ocean varies significantly across countries.
+
+For each country, the total amount of plastic waste is $f(C_i \to D_i)$, and we multiply the MMPW factor for each country to obtain the MMPW in each country. For total pollution in oceans by each country, we multiply per-country MMPW with the probability that MMPW will be emitted to oceans from \cite{meijer2021more}. For pollution in individual rivers, we use the river pollution model in \cite{peng2021plastic,schmidt2017export} which accounts for both macroscopic and microscopic plastic; we take the sum of both types to estimate the pollution from each river, which is estimated to be linear to the total population surrounding the river times the MMPW per person around the river. These data are then used to produce the world map plots that shows improvements in ocean pollution, river pollution and MMPW in general.
+
+
+
+\section{Additional figures}\label{app:eu}
+\renewcommand{\thefigure}{B\arabic{figure}}
+\setcounter{figure}{0}
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/boxplot_plastic_trade.pdf}	
+		%\caption{}
+		\label{subfig:boxplot_product}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{figures/scatterplot_plastic_trade_Total plastics.pdf}
+		%\caption{}
+		\label{subfig:scatterplot_prodcut}
+	\end{subfigure}
+	\caption{\small Association of proportion of plastic waste and net import/export of different forms of plastic. The color of the boxes in the left graph represent net importer or exporter of the corresponding form of plastic. The asterisks represent statistical significance of t-test for the proportions of plastic waste between importers and exporters. The export propensity in the right graph is defined as the export of total plastics over the sum of export and import of total plastics. We use the trade data of 2016 because the waste proportion data is measured for 2016}
+	\label{fig:a1}
+\end{figure}
+
+
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/time_series.png}
+	\caption{\small Fraction of plastic trade for countries of different income levels over time}
+	\label{fig:timeseries}
+\end{figure}
+
+\begin{figure}[htb!]
+	\centering
+	\begin{subfigure}{0.46\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{corr_diff.png}	
+	\end{subfigure}
+	\begin{subfigure}{0.46\textwidth}
+		\centering 
+		\includegraphics[width=\textwidth]{relative_diff.png}
+	\end{subfigure}
+	\caption{\small Distributions of closeness between real and optimal trade flow for different countries (Left: cosine similarity between reality and optimality for each country in the trade matrix; Right: percentage difference between reality and optimality)}
+	\label{fig:corr_dist}
+\end{figure}
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/Countrywise.pdf}
+	\caption{\small Effect of improving a single country's recycling rate on total ocean plastic pollution. Here the recycling policy lever is applied on selected single countries separately.}
+	\label{fig:countrywise recycling policy}
+\end{figure}
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/base.pdf}
+	\caption{\small Ocean and river pollution (in tons) if there is \textbf{no trade}.}
+	\label{fig:base}
+\end{figure}
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{improvement_w1_per.pdf}
+	\caption{\small Improvements (in \%) ocean and river pollution of \textbf{trade} over \textbf{no trade}.}
+	\label{fig:improvement_w1_per}
+\end{figure}
+
+
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{improvement_w10_per.pdf}
+	\caption{\small Improvements (in \%) ocean and river pollution of \textbf{more trade} over \textbf{no trade}.}
+	\label{fig:improvement_w10_per}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/ind_trade_export_w1.pdf}
+    \caption{\textbf{trade}, India.}
+\end{subfigure}
+~
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/ind_trade_export_w10.pdf}
+    \caption{\textbf{more trade}, India.}
+\end{subfigure}
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/mex_trade_export_w1.pdf}
+    \caption{\textbf{trade}, Mexico.}
+\end{subfigure}
+~
+\begin{subfigure}{0.47\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{figures/mex_trade_export_w10.pdf}
+    \caption{\textbf{more trade}, Mexico.}
+\end{subfigure}
+\caption{Export of India and Mexico's plastic waste under different policies on global plastic waste trade.}
+\label{fig:trade-graph-ind-mex}
+\end{figure}
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/improvement_recycle5_ton_recycle.pdf}
+	\caption{\small Improvements (in tons) ocean and river pollution of \textbf{recycle rate 50\%} over \textbf{recycle rate 10\%}.}
+	\label{fig:improvement-recycle-50}
+\end{figure}
+
+\begin{figure}[htb!] 
+	\centering
+		\includegraphics[width=0.9\textwidth]{figures/improvement_recycle10_ton_recycle.pdf}
+	\caption{\small Improvements (in tons) ocean and river pollution of \textbf{recycle rate 100\%} over \textbf{recycle rate 10\%}.}
+	\label{fig:improvement-recycle-100}
+\end{figure}
+
+
+\end{document}
+
+
+
+\iffalse
+\begin{table}[h!]
+\begin{tabular}{lcccccc}
+\toprule
+                          Outcome &  SDI &                                             95\% &  $R^2$ &  $R^2$ &  \% Decrease &       $F$-test \\
+                           &  Estimate  &             Confidence Set                      &  Excl. SDI &  Incl. SDI & in MSE  &      $p$-value  \\
+\midrule
+                      Infection rate & -0.09447 &  [-0.1344, -0.0546] &        0.32 &        0.36 (+0.04) &          6.43\% &  $<0.01$ \\
+         Weekly case growth & -0.09574 &    [-0.1365, -0.0550] &        0.30 &        0.35 (+0.05) &          6.29\% &  $<0.01$ \\
+                Infection rate, 7 days ahead & -0.11072 &   [-0.1370, -0.0844] &        0.25 &        0.35 (+0.10) &          12.49\% &   $<0.01$ \\
+   Weekly case growth, 7 days ahead & -0.11290 &   [-0.1390, -0.0868] &        0.23 &        0.33 (+0.10) &          12.48\% &  $<0.01$ \\
+ Weekly death growth, 14 days ahead & -0.04601 &  [-0.0620, -0.0300] &        0.25 &        0.32 (+0.08) &          9.09\% &  $<0.01$ \\
+ Weekly death growth, 21 days ahead & -0.04591 &  [-0.0569, -0.0349] &        0.19 &        0.28 (+0.09) &          10.90\% &  $<0.01$ \\
+                               $R_t$ & -0.01086 &   [-0.0125, -0.0092] &        0.46 &        0.64 (+0.18) &          34.80\% &   $<0.01$ \\
+                            $R_t$, 7 days ahead & -0.010230 &   [-0.0116, -0.0088] &        0.39 &        0.59 (+0.20) &          32.82\% &   $<0.01$ \\
+\bottomrule
+\bottomrule
+\end{tabular}
+\caption{Linear specification of the SDI effect on various COVID-19 spread measures. Estimates are reported from the base specification and standard errors are clustered at the state level. The $F$-test tests whether an unrestricted model including SDI improves predictive power over a restricted model excluding SDI.}
+\label{tab:reg_results}
+\end{table}
+\fi
+
+
+
+\iffalse
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{lccccccccccc}         							
+\hline
+\noalign{\smallskip}
+\hline
+\noalign{\smallskip}                                        
+& \multicolumn{3}{c}{Panel A: $\text{Infection \ rate}_t$} &   &	 \multicolumn{3}{c}{Panel B: $\text{Case \ growth \ rate}_t$} & 	& \multicolumn{3}{c}{Panel C: $\text{Death \ growth \ rate}_{t+2}$}	\\	
+\cmidrule(lr){2-4}\cmidrule(lr){6-8} \cmidrule(lr){9-12} 
+$\text{Containment}_{t-1}$	& 	-0.0095	 & 	 &-0.0055	& &-0.0140	 &	 & -0.0084 & 	& 	-0.0043 &	 & 0.0026 \\
+	&	[0.0014]	& 	& [0.0016] & 	&[0.0025]	 &	 & [0.0026]& 	&[0.0047] &	 & [0.0052]	\\
+$\text{SDI}_{t-1}$	&	&	-0.0055 		& -0.0065	&&	&-0.0112	 & -0.0091 & 	 & &-0.0097 & -0.0104 \\
+	&	&[0.0016]	& [0.0019]&  &	&[0.0017] & [0.0019]& 		 & &[0.0020]	 & [0.0025]	\\
+\\
+$R^2$ & 0.2384  & \textbf{0.2545} & \textbf{0.2617} &		&0.1806 & \textbf{0.1956} & \textbf{0.2042} & &0.1031  & \textbf{0.1148} &  \textbf{0.1139} \\
+\hline\noalign{\smallskip} 
+\hline\noalign{\smallskip}                                        			
+\end{tabular}
+\caption{The association between the SDI and several metrics of virus spread.}
+\label{tab:EU}
+\end{table}
+
+\fi
+
+
+
+
+\iffalse
+\begin{table}[h!]
+\centering
+\begin{tabular}{lc}
+\toprule
+{Dates} & {Effect on SDI (30 day mean)}  \\
+ & [95\% confidence set] \\
+\midrule
+Whole sample    & 2.0 ***   \\
+ &  $[1.4, 2.6]$ \\
+\midrule
+March-April 2020     & 2.9 ***   \\
+ & $[2.0, 3.8]$ \\
+May-September 2020    & -1.0  \\
+ & $[-3.0, 1.2]$ \\
+October-December 2020    & 0.8    \\
+ & $[-0.5, 2.1]$ \\
+January-February 2021     & 1.3 **    \\
+ & $[0.1, 2.4]$ \\
+\bottomrule
+\bottomrule
+\end{tabular}
+\caption{The effect of an increase in state containment policies on the SDI (30-day mean). Standard errors are calculated via bootstrap resampling.}
+\label{tab:impulse_effect}
+\end{table}
+\fi
+
+
